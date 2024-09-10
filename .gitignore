@@ -396,3 +396,7 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+/ms-log/appsettings.Development.json
+/ms-log/Data/database.db
+/ms-log/Data/database.db-shm
+/ms-log/Data/database.db-wal
