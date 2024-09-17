@@ -3,6 +3,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OData.ModelBuilder;
 using ms_log.Data;
 using ms_log.Models;
+using ms_log.Services.ConfigurationService;
+using ms_log.Services.LoggerService;
+using ms_log.Services.RabbitMq;
+using ms_log.Settings;
 using System.Text.Json.Serialization;
 
 
@@ -32,5 +36,22 @@ public static class ServiceCollectionExtension
             {
                 options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
             });
+    }
+
+
+    public static void AddCustomHostedServices(this IServiceCollection services)
+    {
+        services.AddHostedService<RabbitMqSubscriberService>();
+    }
+
+    public static void AddSettings(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.Configure<MSConfigurationSettings>(configuration.GetSection("MSConfigurationSettings"));
+    }
+
+    public static void AddCustomServices(this IServiceCollection services)
+    {
+        services.AddTransient<ILogger, LoggerService>();
+        services.AddTransient<IConfigurationService, ConfigurationService>();
     }
 }

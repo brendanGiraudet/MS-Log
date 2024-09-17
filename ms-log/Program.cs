@@ -8,8 +8,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddHttpClient();
+
 builder.Services.AddDatabaseContext(builder.Configuration);
 builder.Services.AddODataContext();
+builder.Services.AddCustomHostedServices();
+builder.Services.AddCustomServices();
+builder.Services.AddSettings(builder.Configuration);
 
 var app = builder.Build();
 

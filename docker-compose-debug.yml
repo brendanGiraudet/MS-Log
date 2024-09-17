@@ -1,7 +1,7 @@
 version: "3.4"
 services:
   ms-log:
-    image: bakayarusama/ms-log:1.0.0
+    image: bakayarusama/ms-log:1.0.1
     container_name: ms-log
     
     build:
@@ -17,6 +17,10 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       ApplicationVersion: 1.0.0
       ConnectionStrings__Database: "Data Source=/app/Data/database.db"
+
+      MSConfigurationSettings__OdataBaseUrl: "https://ms-configuration-local.brendan-giraudet.com/odata"
+      
+      RabbitMqQueueName: "ms-log"
 
     volumes:
       - C:\Users\brend\Source\Repos\brendanGiraudet\MS-log\ms-log\Data:/app/Data

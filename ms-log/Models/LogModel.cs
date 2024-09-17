@@ -7,15 +7,17 @@ namespace ms_log.Models;
 public record LogModel
 {
     [Key]
-    public Guid Id { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
 
     public required string Level { get; set; }
     
     public required string Message { get; set; }
     
-    public required DateTime Timestamp { get; set; }
+    public required string Payload { get; set; }
     
-    public required Guid ApplicationCode { get; set; }
+    public DateTime Timestamp { get; set; } = DateTime.UtcNow;
     
-    public required bool Deleted { get; set; }
+    public required string ApplicationName { get; set; }
+    
+    public bool Deleted { get; set; } = false;
 }
