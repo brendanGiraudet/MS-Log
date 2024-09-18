@@ -2,6 +2,8 @@
 
 public record RabbitMqMessageBase<T>
 {
+    public required string UserId { get; set; }
+
     public required string ApplicationName { get; set; }
     
     public required string RoutingKey { get; set; }
