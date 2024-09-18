@@ -70,24 +70,13 @@ public class RabbitMqSubscriberService : IHostedService, IDisposable
 
             Console.WriteLine($"Received message from {_queueName}: {message}");
 
-            switch (ea.RoutingKey)
-            {
-                case "CreateRecipResult":
-                    {
-                        await LogCreateRecipAsync(message);
-                    }
-                    break;
-                default:
-
-                    break;
-            }
-
+            await HandleRecipAsync(message);
         };
 
         _channel.BasicConsume(queue: _queueName, autoAck: true, consumer: consumer);
     }
 
-    private async Task LogCreateRecipAsync(string message)
+    private async Task HandleRecipAsync(string message)
     {
         try
         {
