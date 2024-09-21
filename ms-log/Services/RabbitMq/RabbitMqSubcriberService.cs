@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using ms_configuration.Ms_configuration.Models;
+using ms_log.Constants;
 using ms_log.Models;
 using ms_log.Services.ConfigurationService;
 using ms_recip.Ms_recip.Models;
@@ -70,17 +71,47 @@ public class RabbitMqSubscriberService : IHostedService, IDisposable
 
             Console.WriteLine($"Received message from {_queueName}: {message}");
 
-            await HandleRecipAsync(message);
+            if(ea.Exchange == RabbitmqConstants.RecipExchangeName
+            && RecipActions.Contains(ea.RoutingKey))
+                await HandleRecipAsync(message);
+            
+            if(ea.Exchange == RabbitmqConstants.RecipExchangeName
+            && IngredientActions.Contains(ea.RoutingKey))
+                await HandleIngredientAsync(message);
         };
 
         _channel.BasicConsume(queue: _queueName, autoAck: true, consumer: consumer);
     }
 
+    private string[] RecipActions = 
+    {
+        RabbitmqConstants.CreateRecipResultRoutingKey,
+        RabbitmqConstants.UpdateRecipResultRoutingKey,
+        RabbitmqConstants.DeleteRecipResultRoutingKey
+    };
+    
+    private string[] IngredientActions = 
+    {
+        RabbitmqConstants.CreateIngredientResultRoutingKey,
+        RabbitmqConstants.UpdateIngredientResultRoutingKey,
+        RabbitmqConstants.DeleteIngredientResultRoutingKey
+    };
+
     private async Task HandleRecipAsync(string message)
+    {
+        await HandleAsync<RecipModel>(message);
+    }
+    
+    private async Task HandleIngredientAsync(string message)
+    {
+        await HandleAsync<IngredientModel>(message);
+    }
+    
+    private async Task HandleAsync<T>(string message)
     {
         try
         {
-            var deserializedMessage = JsonSerializer.Deserialize<RabbitMqMessageBase<RecipModel>>(message);
+            var deserializedMessage = JsonSerializer.Deserialize<RabbitMqMessageBase<T>>(message);
 
             if (deserializedMessage != null)
             {
@@ -88,7 +119,7 @@ public class RabbitMqSubscriberService : IHostedService, IDisposable
 
                 var logsService = scope.ServiceProvider.GetRequiredService<ILogger>();
 
-                Func<RabbitMqMessageBase<RecipModel>, Exception?, string> func = null;
+                Func<RabbitMqMessageBase<T>, Exception?, string> func = null;
 
                 logsService.Log(LogLevel.Information,
                                 eventId: new EventId(),
